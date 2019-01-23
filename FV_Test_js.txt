@@ -1,0 +1,55 @@
+1)
+function Employee(first, last, salary) {
+  this.firstName = first;
+  this.lastName = last;
+  this.salary = salary;
+};
+
+Employee.prototype.increaseSalary = function() {
+  return this.salary + 1000;
+};
+
+Employee.prototype.details = function() {
+  return "Name: " + this.firstName + " " + this.lastName + ", Salary: " + this.salary.toString();
+};
+
+
+2)
+var MutliplyBy = (...args) => (
+  args.length < 3
+  ? MutliplyBy.bind(null, ...args)
+  : args.reduce((a, b) => a * b)
+);
+console.log(MutliplyBy(2)(3)(4));
+console.log(MutliplyBy(4)(3)(4));
+
+
+3)
+var Longest_Country_Name = function(arr){
+  var count = [];
+  for(var i = 0; i < arr.length; i++){
+    count.push(arr[i].length);
+  }
+  var max = Math.max(...count);
+  var index = count.indexOf(max);
+  return arr[index];
+};
+
+var arr = ["Australia", "Germany", "United States of America"];
+console.log(Longest_Country_Name(arr));
+
+
+4)
+//	se asume que se puede usar jquery
+function removeColor() {
+	$("#colorSelect option:selected").remove();
+};
+
+
+5)
+//	se asume que se puede usar jquery
+function insert_Row()() {
+	var rowCount = $('#sampleTable tr:last').index() + 1;
+	$('#sampleTable').append('<tr><td>Row' + rowCount.toString() + ' cell1</td><td>Row' + rowCount.toString() + ' cell2</td></tr>');
+};
+
