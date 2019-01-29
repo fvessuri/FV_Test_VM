@@ -11,6 +11,7 @@ namespace MyRestfulApp.Business
     {
         string Cotizacion();
     }
+
     public class CotizacionSelector
     {
         public static string SeleccionarCotizacion(string moneda)
@@ -38,7 +39,7 @@ namespace MyRestfulApp.Business
     {
         public string Cotizacion()
         {
-            return "unauthorized";
+            return Defs._unauthorized;
         }
     }
 
@@ -46,7 +47,12 @@ namespace MyRestfulApp.Business
     {
         public string Cotizacion()
         {
-            return "unauthorized";
+            return Defs._unauthorized;
         }
+    }
+
+    public static class Defs
+    {
+        public static string _unauthorized = "unauthorized";
     }
 }

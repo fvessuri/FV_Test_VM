@@ -22,6 +22,9 @@ namespace MyRestfulApp.Controllers.Api
             if (res.ToLower() == "unauthorized")
                 return Unauthorized();
 
+            if (string.IsNullOrEmpty(res))
+                return BadRequest();
+
             return Ok(res);
         }
     }

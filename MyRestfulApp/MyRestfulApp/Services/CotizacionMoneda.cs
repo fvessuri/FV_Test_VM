@@ -9,6 +9,15 @@ namespace MyRestfulApp.Services
 {
     public class CotizacionMoneda
     {
+        public static string ObtenerCotizacionMoneda(string moneda)
+        {
+            string res = string.Empty;
+
+            res = Business.CotizacionSelector.SeleccionarCotizacion(moneda);
+
+            return res;
+        } 
+
         public static string CotizacionDolar()
         {
             string res = string.Empty;
