@@ -9,12 +9,12 @@ namespace MyRestfulApp.Business
 {
     public interface ICotizacionSelector
     {
-        string Cotizacion();
+        HttpResponseMessage Cotizacion();
     }
 
     public class CotizacionSelector
     {
-        public static string SeleccionarCotizacion(string moneda)
+        public static HttpResponseMessage SeleccionarCotizacion(string moneda)
         {
             if (moneda.ToUpper() == System.Enum.GetName(typeof(Models.Monedas), Models.Monedas.Dolar).ToUpper())
                 return new CotizacionDolar().Cotizacion();
@@ -23,13 +23,20 @@ namespace MyRestfulApp.Business
             else if (moneda.ToUpper() == System.Enum.GetName(typeof(Models.Monedas), Models.Monedas.Real).ToUpper())
                 return new CotizacionReal().Cotizacion();
             else
-                return string.Empty;
+            {
+                HttpResponseMessage resp = new HttpResponseMessage();
+
+                resp.StatusCode = System.Net.HttpStatusCode.NotFound;
+                resp.Content = new StringContent("No se encontró cotización para la moneda solicitada");
+
+                return resp;
+            }
         }
     }
 
     public class CotizacionDolar: ICotizacionSelector
     {
-        public string Cotizacion()
+        public HttpResponseMessage Cotizacion()
         {
             return Services.CotizacionMoneda.CotizacionDolar();
         }
@@ -37,22 +44,27 @@ namespace MyRestfulApp.Business
 
     public class CotizacionPesos : ICotizacionSelector
     {
-        public string Cotizacion()
+        public HttpResponseMessage Cotizacion()
         {
-            return Defs._unauthorized;
+            HttpResponseMessage resp = new HttpResponseMessage();
+
+            resp.StatusCode = System.Net.HttpStatusCode.Unauthorized;
+            resp.Content = new StringContent("Usuario no autorizado para consultar la cotización");
+
+            return resp;
         }
     }
 
     public class CotizacionReal : ICotizacionSelector
     {
-        public string Cotizacion()
+        public HttpResponseMessage Cotizacion()
         {
-            return Defs._unauthorized;
-        }
-    }
+            HttpResponseMessage resp = new HttpResponseMessage();
 
-    public static class Defs
-    {
-        public static string _unauthorized = "unauthorized";
+            resp.StatusCode = System.Net.HttpStatusCode.Unauthorized;
+            resp.Content = new StringContent("Usuario no autorizado para consultar la cotización");
+
+            return resp;
+        }
     }
 }

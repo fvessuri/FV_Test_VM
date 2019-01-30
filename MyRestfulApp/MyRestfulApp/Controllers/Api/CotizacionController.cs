@@ -13,19 +13,9 @@ namespace MyRestfulApp.Controllers.Api
         //  GET /api/cotizacion/moneda
         [HttpGet]
         [Route("{moneda:alpha}")]
-        public IHttpActionResult CotizacionGet(string moneda)
+        public HttpResponseMessage CotizacionGet(string moneda)
         {
-            string res = string.Empty;
-
-            res = Business.CotizacionSelector.SeleccionarCotizacion(moneda);
-
-            if (res.ToLower() == "unauthorized")
-                return Unauthorized();
-
-            if (string.IsNullOrEmpty(res))
-                return BadRequest();
-
-            return Ok(res);
+            return Business.CotizacionSelector.SeleccionarCotizacion(moneda);
         }
     }
 }

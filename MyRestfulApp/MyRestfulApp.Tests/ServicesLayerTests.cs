@@ -1,16 +1,17 @@
 ﻿using System;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace MyRestfulApp.Tests
 {
     [TestFixture]
-    public class ServicesLayer
+    public class ServicesLayerTests
     {
         [Test]
         public void UserServices_WhenCalled_VerifyData()
         {
-            string usuarioID = "fvessuri";
+            string usuarioID = "fvTest";
             Dtos.UsuarioDto usuarioNuevo = new Dtos.UsuarioDto();
 
             usuarioNuevo.id = "mxyzptlk";
@@ -159,43 +160,43 @@ namespace MyRestfulApp.Tests
         }
 
         [Test]
-        public void ObtenerCotizacionMoneda_WhenPesos_ReturnStringUnauthorized()
+        public void ObtenerCotizacionMoneda_WhenPesos_ReturnReturnHttpStatusCodeUnauthorized()
         {
             string moneda = "Pesos";
 
             var res = Services.CotizacionMoneda.ObtenerCotizacionMoneda(moneda);
 
-            Assert.That(res.ToLower(), Is.EqualTo(Business.Defs._unauthorized.ToLower()));
+            Assert.That(res.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Unauthorized));
         }
 
         [Test]
-        public void ObtenerCotizacionMoneda_WhenReal_ReturnStringUnauthorized()
+        public void ObtenerCotizacionMoneda_WhenReal_ReturnReturnHttpStatusCodeUnauthorized()
         {
             string moneda = "Real";
 
             var res = Services.CotizacionMoneda.ObtenerCotizacionMoneda(moneda);
 
-            Assert.That(res.ToLower(), Is.EqualTo(Business.Defs._unauthorized.ToLower()));
+            Assert.That(res.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Unauthorized));
         }
 
         [Test]
-        public void ObtenerCotizacionMoneda_WhenOther_ReturnStringEmpty()
+        public void ObtenerCotizacionMoneda_WhenOther_ReturnHttpStatusCodeNotFound()
         {
             string moneda = "Euro";
 
             var res = Services.CotizacionMoneda.ObtenerCotizacionMoneda(moneda);
 
-            Assert.That(res.ToLower(), Is.Empty);
+            Assert.That(res.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.NotFound));
         }
 
         [Test]
-        public void CotizacionMoneda_WhenCalled_ReturnString()
+        public void CotizacionMoneda_WhenCalled_ReturnHttpStatusCodeOK()
         {
             string moneda = "Dolar";
 
             var res = Services.CotizacionMoneda.CotizacionDolar();
 
-            Assert.That(res.ToLower(), Is.Not.Empty);
+            Assert.That(res.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
         }
     }
 }
