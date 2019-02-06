@@ -130,6 +130,7 @@
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CotizacionMoneda.cs" />
+    <Compile Include="Services\CotizacionMonedaHttpService.cs" />
     <Compile Include="Services\TransformDtoModel.cs" />
     <Compile Include="Services\UserServices.cs" />
   </ItemGroup>

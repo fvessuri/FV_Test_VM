@@ -8,14 +8,20 @@ using System.Data;
 
 namespace MyRestfulApp.DataAccess
 {
-    public class Conexion
+    public interface IConexion
+    {
+        DataTable RealizarConsulta(string sql);
+        void EjecutarComando(string sql);
+    }
+
+    public class Conexion : IConexion
     {
         private static SqlConnection ObtenerConexion()
         {
             return new SqlConnection(ConfigurationManager.ConnectionStrings["TestConnection"].ToString());
         }
 
-        public static DataTable RealizarConsulta(string sql)
+        public DataTable RealizarConsulta(string sql)
         {
             DataTable dt = new DataTable();
 
@@ -34,7 +40,7 @@ namespace MyRestfulApp.DataAccess
             return dt;
         }
 
-        public static void EjecutarComando(string sql)
+        public void EjecutarComando(string sql)
         {
 
             using (SqlConnection conn = ObtenerConexion())

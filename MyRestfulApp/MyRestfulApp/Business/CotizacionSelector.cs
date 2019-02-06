@@ -38,7 +38,7 @@ namespace MyRestfulApp.Business
     {
         public HttpResponseMessage Cotizacion()
         {
-            return Services.CotizacionMoneda.CotizacionDolar();
+            return new Services.CotizacionMonedaHttpService().CotizacionDolar();
         }
     }
 

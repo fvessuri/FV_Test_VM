@@ -9,55 +9,94 @@ namespace MyRestfulApp.Tests
     public class ServicesLayerTests
     {
         [Test]
-        public void UserServices_WhenCalled_VerifyData()
+        public void UserServices_GetUsersList_VerifyCallGetUsersReturnUsersList()
         {
-            string usuarioID = "fvTest";
-            Dtos.UsuarioDto usuarioNuevo = new Dtos.UsuarioDto();
+            var conn = new Moq.Mock<DataAccess.IConexion>();
+            var user = new Moq.Mock<DataAccess.IUserData>();
+            var service = new Services.UserServices(conn.Object, user.Object);
 
-            usuarioNuevo.id = "mxyzptlk";
-            usuarioNuevo.Nombre = "Mxyz";
-            usuarioNuevo.Apellido = "Ptlk";
-            usuarioNuevo.Email = "mxyzplk@sarasa.com";
-            usuarioNuevo.Password = "kltpzyxm";
+            user.Setup(u => u.GetUsers()).Returns(new List<Models.UserModel> { new Models.UserModel { id = "a", Nombre = "a", Apellido = "a", Email = "a@a.com", Password = "a" }
+                                                                                , new Models.UserModel { id = "b", Nombre = "b", Apellido = "b", Email = "b@b.com", Password = "b" } });
 
-            //  Users List
-            var list = Services.UserServices.GetUsers();
+            var res = service.GetUsers();
 
-            Assert.That(list, Is.Not.Null);
+            user.Verify(u => u.GetUsers());
 
-            //  User by id
-            var usu = Services.UserServices.GetUser(usuarioID);
+            Assert.That(res, Is.TypeOf<List<Models.UserModel>>());
+        }
 
-            Assert.That(usu.id, Is.EqualTo(usuarioID));
+        [Test]
+        public void UserServices_GetUser_VerifyCallGetUserReturnUser()
+        {
+            var conn = new Moq.Mock<DataAccess.IConexion>();
+            var user = new Moq.Mock<DataAccess.IUserData>();
+            var service = new Services.UserServices(conn.Object, user.Object);
+            var users = new List<Models.UserModel> { new Models.UserModel { id = "a", Nombre = "a", Apellido = "a", Email = "a@a.com", Password = "a" }
+                                                                                , new Models.UserModel { id = "b", Nombre = "b", Apellido = "b", Email = "b@b.com", Password = "b" } };
 
-            //  Add User
-            var resAdd = Services.UserServices.AddUser(usuarioNuevo);
+            user.Setup(u => u.GetUser("a")).Returns(users.Find(u => u.id == "a"));
 
-            Assert.That(resAdd, Is.Empty);
+            var res = service.GetUser("a");
 
-            var usuAdd = Services.UserServices.GetUser(usuarioNuevo.id);
+            user.Verify(u => u.GetUser("a"));
 
-            Assert.That(usuAdd.id, Is.EqualTo(usuarioNuevo.id));
+            Assert.That(res, Is.TypeOf<Dtos.UsuarioDto>());
+        }
 
-            //  Update User
-            usuarioNuevo.Email = "mxyzplk@sarlanga.com";
-            var resUpd = Services.UserServices.UpdateUser(usuarioNuevo);
+        [Test]
+        public void UserServices_InsertUser_VerifyCallAddUserReturnStringEmpty()
+        {
+            var conn = new Moq.Mock<DataAccess.IConexion>();
+            var user = new Moq.Mock<DataAccess.IUserData>();
+            var service = new Services.UserServices(conn.Object, user.Object);
+            var usr = new Models.UserModel { id = "a", Nombre = "a", Apellido = "a", Email = "a@a.com", Password = "a" };
+            var usrDto = new Dtos.UsuarioDto { id = "a", Nombre = "a", Apellido = "a", Email = "a@a.com", Password = "a" };
 
-            Assert.That(resUpd, Is.Empty);
+            user.Setup(u => u.AddUser(usr)).Returns(usr);
 
-            var usuUpd = Services.UserServices.GetUser(usuarioNuevo.id);
+            var res = service.AddUser(usrDto);
 
-            Assert.That(usuUpd.Email, Is.EqualTo(usuarioNuevo.Email));
+            //user.Verify(u => u.AddUser(usr));
 
-            //  Delete User
-            var resDel = Services.UserServices.DeleteUser(usuarioNuevo.id);
+            Assert.That(res, Is.Empty);
+        }
 
-            Assert.That(resDel, Is.Empty);
+        [Test]
+        public void UserServices_UpdateUser_VerifyCallUpdateUserReturnStringEmpty()
+        {
+            var conn = new Moq.Mock<DataAccess.IConexion>();
+            var user = new Moq.Mock<DataAccess.IUserData>();
+            var service = new Services.UserServices(conn.Object, user.Object);
+            var usr = new Models.UserModel { id = "a", Nombre = "a", Apellido = "a", Email = "a@a.com", Password = "a" };
+            var usrDto = new Dtos.UsuarioDto { id = "a", Nombre = "a", Apellido = "a", Email = "a@a.com", Password = "a" };
 
-            var usuDel = Services.UserServices.GetUser(usuarioNuevo.id);
+            user.Setup(u => u.UpdateUser(usr)).Returns(usr);
 
-            Assert.That(usuDel, Is.Null);
+            var res = service.UpdateUser(usrDto);
 
+            //user.Verify(u => u.UpdateUser(usr));
+
+            Assert.That(res, Is.Empty);
+        }
+
+        [Test]
+        public void UserServices_DeleteUser_VerifyCallDeleteUserReturnStringEmpty()
+        {
+            var conn = new Moq.Mock<DataAccess.IConexion>();
+            var user = new Moq.Mock<DataAccess.IUserData>();
+            var service = new Services.UserServices(conn.Object, user.Object);
+            var usr = new Models.UserModel { id = "a", Nombre = "a", Apellido = "a", Email = "a@a.com", Password = "a" };
+            var usu = new Models.UserModel { id = "a", Nombre = "a", Apellido = "a", Email = "a@a.com", Password = "a" };
+
+            usu = null;
+
+            user.Setup(u => u.DeleteUser("a")).Returns(usu);
+
+            var res = service.DeleteUser("a");
+
+            user.Verify(u => u.DeleteUser("a"));
+
+            Assert.That(res, Is.Empty);
         }
 
         [Test]
@@ -153,10 +192,13 @@ namespace MyRestfulApp.Tests
         public void ObtenerCotizacionMoneda_WhenDolar_ReturnString()
         {
             string moneda = "Dolar";
+            var httpServ = new Moq.Mock<Services.ICotizacionMonedaHttpService>();
+
+            httpServ.Setup(hs => hs.CotizacionDolar()).Returns(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
 
             var res = Services.CotizacionMoneda.ObtenerCotizacionMoneda(moneda);
 
-            Assert.That(res, Is.Not.Empty);
+            Assert.That(res, Is.EqualTo(System.Net.HttpStatusCode.OK));
         }
 
         [Test]
@@ -192,9 +234,11 @@ namespace MyRestfulApp.Tests
         [Test]
         public void CotizacionMoneda_WhenCalled_ReturnHttpStatusCodeOK()
         {
-            string moneda = "Dolar";
+            var httpServ = new Moq.Mock<Services.ICotizacionMonedaHttpService>();
 
-            var res = Services.CotizacionMoneda.CotizacionDolar();
+            httpServ.Setup(hs => hs.CotizacionDolar()).Returns(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
+
+            var res = httpServ.Object.CotizacionDolar();
 
             Assert.That(res.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
         }

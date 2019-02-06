@@ -6,20 +6,36 @@ using System.Web;
 
 namespace MyRestfulApp.DataAccess
 {
-    public class UserData
+    public interface IUserData
     {
-        public static List<Models.UserModel> GetUsers()
+        List<Models.UserModel> GetUsers();
+        Models.UserModel GetUser(string userID);
+        Models.UserModel AddUser(Models.UserModel user);
+        Models.UserModel UpdateUser(Models.UserModel user);
+        Models.UserModel DeleteUser(string userID);
+    }
+
+    public class UserData : IUserData
+    {
+        IConexion _conexion;
+
+        public UserData(IConexion conexion = null)
+        {
+            _conexion = conexion ?? new Conexion();
+        }
+
+        public List<Models.UserModel> GetUsers()
         {
             string sql = string.Format("select id, Nombre, Apellido, Email, [Password] from [User]");
 
-            return TransformUsersFromDatatable(Conexion.RealizarConsulta(sql));
+            return TransformUsersFromDatatable(_conexion.RealizarConsulta(sql));
         }
 
-        public static Models.UserModel GetUser(string userID)
+        public Models.UserModel GetUser(string userID)
         {
             string sql = string.Format("select id, Nombre, Apellido, Email, [Password] from [User] where id = '{0}'", userID);
 
-            List<Models.UserModel> users = TransformUsersFromDatatable(Conexion.RealizarConsulta(sql));
+            List<Models.UserModel> users = TransformUsersFromDatatable(_conexion.RealizarConsulta(sql));
 
             if (users != null && users.Count > 0)
                 return users[0];
@@ -27,7 +43,7 @@ namespace MyRestfulApp.DataAccess
                 return null;
         }
 
-        public static Models.UserModel AddUser(Models.UserModel user)
+        public Models.UserModel AddUser(Models.UserModel user)
         {
             string sql = string.Format("insert into [User] (id, Nombre, Apellido, Email, [Password]) values('{0}', '{1}', '{2}', '{3}', '{4}')", user.id, user.Nombre, user.Apellido, user.Email, user.Password);
 
@@ -35,7 +51,7 @@ namespace MyRestfulApp.DataAccess
 
             if (user == null)
             {
-                Conexion.EjecutarComando(sql);
+                _conexion.EjecutarComando(sql);
 
                 userNuevo = GetUser(user.id);
 
@@ -48,7 +64,7 @@ namespace MyRestfulApp.DataAccess
                 return null;
         }
 
-        public static Models.UserModel UpdateUser(Models.UserModel user)
+        public Models.UserModel UpdateUser(Models.UserModel user)
         {
             string sql = string.Format("update [User] set Nombre = '{1}', Apellido = '{2}', Email = '{3}', [Password] = '{4}') where id = '{0}'", user.id, user.Nombre, user.Apellido, user.Email, user.Password);
 
@@ -56,7 +72,7 @@ namespace MyRestfulApp.DataAccess
 
             if (user == null)
             {
-                Conexion.EjecutarComando(sql);
+                _conexion.EjecutarComando(sql);
 
                 userAct = GetUser(user.id);
 
@@ -69,7 +85,7 @@ namespace MyRestfulApp.DataAccess
                 return null;
         }
 
-        public static Models.UserModel DeleteUser(string userID)
+        public Models.UserModel DeleteUser(string userID)
         {
             string sql = string.Format("delete [User] where id = '{0}'", userID);
 
@@ -77,7 +93,7 @@ namespace MyRestfulApp.DataAccess
 
             if (user == null)
             {
-                Conexion.EjecutarComando(sql);
+                _conexion.EjecutarComando(sql);
 
                 user = GetUser(userID);
 

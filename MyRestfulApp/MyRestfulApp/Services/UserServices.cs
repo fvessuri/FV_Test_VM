@@ -7,9 +7,18 @@ namespace MyRestfulApp.Services
 {
     public class UserServices
     {
-        public static List<Models.UserModel> GetUsers()
+        DataAccess.IUserData _userData;
+        DataAccess.IConexion _conexion;
+
+        public UserServices(DataAccess.IConexion conexion = null, DataAccess.IUserData userData = null)
         {
-            List<Models.UserModel> users = DataAccess.UserData.GetUsers();
+            _conexion = conexion ?? new DataAccess.Conexion();
+            _userData = userData ?? new DataAccess.UserData(_conexion);
+        }
+
+        public List<Models.UserModel> GetUsers()
+        {
+            List<Models.UserModel> users = _userData.GetUsers();
             List<Dtos.UsuarioDto> usersDto = new List<Dtos.UsuarioDto>();
 
             if (users != null)
@@ -18,9 +27,9 @@ namespace MyRestfulApp.Services
             return users;
         }
 
-        public static Dtos.UsuarioDto GetUser(string userID)
+        public Dtos.UsuarioDto GetUser(string userID)
         {
-            Models.UserModel user = DataAccess.UserData.GetUser(userID);
+            Models.UserModel user = _userData.GetUser(userID);
             Dtos.UsuarioDto userDto = new Dtos.UsuarioDto();
 
             if (user != null)
@@ -29,10 +38,10 @@ namespace MyRestfulApp.Services
             return userDto;
         }
 
-        public static string AddUser(Dtos.UsuarioDto usuarioDto)
+        public string AddUser(Dtos.UsuarioDto usuarioDto)
         {
             Models.UserModel user = Services.TransformDtoModel.UserDto2Model(usuarioDto);
-            Models.UserModel userNuevo = DataAccess.UserData.AddUser(user);
+            Models.UserModel userNuevo = _userData.AddUser(user);
 
             if (user != null)
                 return string.Empty;
@@ -40,10 +49,10 @@ namespace MyRestfulApp.Services
                 return "No se dio de alta el usuario nuevo";
         }
 
-        public static string UpdateUser(Dtos.UsuarioDto usuarioDto)
+        public string UpdateUser(Dtos.UsuarioDto usuarioDto)
         {
             Models.UserModel user = Services.TransformDtoModel.UserDto2Model(usuarioDto);
-            Models.UserModel userAct = DataAccess.UserData.UpdateUser(user);
+            Models.UserModel userAct = _userData.UpdateUser(user);
 
             if (user != null)
                 return string.Empty;
@@ -51,9 +60,9 @@ namespace MyRestfulApp.Services
                 return "No se actualizó el usuario " + userAct.id;
         }
 
-        public static string DeleteUser(string userID)
+        public string DeleteUser(string userID)
         {
-            Models.UserModel user = DataAccess.UserData.DeleteUser(userID);
+            Models.UserModel user = _userData.DeleteUser(userID);
 
             if (user != null)
                 return "No se eliminó el usuario " + userID;
